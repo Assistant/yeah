@@ -1,0 +1,106 @@
+#!/usr/bin/perl -w
+
+# Neru License
+# Version 3, 15th June 2012
+#
+#
+# Chu's permitted to copy and distribute verbatim or modified
+# copies of this license document, and changing it is allowed as long
+# as the name is changed, but it would be nice if you followed the terms below.
+#
+# TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+#
+# 0. Chu should try to be nice and stuff but other than that do whatever. =w=
+# 1. Also, chu have to go get a cup of cappuccino and stuff (though if you do not like cappuccino you can choose to give it to someone else)
+
+use warnings;
+use strict;
+use IO::Socket::INET;
+print "Please input nickserv password: ";
+my $nservpass = <>;
+
+my $testing = 0;
+my $testchan = "#RuriTesting";
+my $server = "irc.rizon.net";
+my $nick = "yeah";
+my $login = "yeah";
+#my $nservpass = "lel"; # NickServ pass (if not using, keep blank)
+my $owner = "/msg Joelixny"; # Your contact info, in cast anyone needs to contact you.
+my @channel = ("#/g/entoo","#/g/bots","#/g/ainax","#/b/circlejerk","#talking","#bots","#✈▌▌","#☭","#VIzon","#/g/iggle","#idling","#/g/lovemovement","#rice");
+my $acceptinvites = "True"; # Join rooms /invited to?
+my @ban = ("");
+my @silence = ("#/g/technology");
+#my $admin = "Joelixny!~Joelixny@"; 
+my $admin = "\@lala\.lala\.lala";
+my $versionnumber = "0.3";
+
+my $sock = new IO::Socket::INET(PeerAddr => $server,
+                                PeerPort => 6667,
+                                Proto => 'tcp') or
+                                    die "Can't connect\n";
+
+print $sock "NICK $nick\r\n";
+print $sock "USER $login 8 * :yeah v$versionnumber - $owner\r\n";
+
+while (my $input = <$sock>) {
+    if ($input =~ /004/) {
+        last;
+    }
+    elsif ($input =~ /433/) {
+        die "Nickname is already in use.";
+    }
+}
+
+### Indetifying and joining channels.
+
+print $sock "PRIVMSG NickServ :IDENTIFY $nservpass\r\n";
+sleep 2;
+if ($testing == 1){
+  print $sock "JOIN $testchan\r\n"
+  }
+else{
+  foreach (@channel) {
+	 print $sock "JOIN $_\r\n";
+  }
+}
+
+print $sock "PRIVMSG chanserv :identify #idling herpderp\r\n";
+print $sock "PRIVMSG chanserv :sync #idling\r\n";
+### Main function.
+
+while (my $input = <$sock>) {
+    chop $input;
+    print "$input\n";
+    if ($input =~ /PING(.*)$/) {
+      print $sock "PONG $1\r\n";
+    }
+    if ($input =~ /:(.*)\!.*@.* INVITE (.*) :\#(.*)/) {
+      my $inviter1 = $1; # who invited
+      my $inviter2 = $2; # your username
+      my $inviter3 = $3; # channel you were invited to
+      if ($acceptinvites =~ /True/) {
+        print "Joining channel \#$inviter3 via request from $inviter1.\r\n";
+        print $sock "JOIN \#$inviter3 :\r\n";
+      }
+      else
+      {
+        print $sock "PRIVMSG $inviter1 :I do not accept invites!\r\n";
+      }
+    }
+    if ($input =~ m/^:([^!]+)!(?:[^@]+)@(?:[^ ]+) PRIVMSG (.*) :.*(y|Y)(e|E)(a|A)(h|H).*/) {
+      if (int(rand(15))==1) {
+        if ($2 =~ $nick  or $2 ~~ @silence) {
+          print $sock "PRIVMSG $1 :butts\r\n";
+        } else {
+          print $sock "PRIVMSG $2 :butts\r\n";
+        }
+			} else {
+				if ($2 =~ $nick  or $2 ~~ @silence) {
+          print $sock "PRIVMSG $1 :${3}${4}${5}${6}\r\n";
+        } else {
+          print $sock "PRIVMSG $2 :${3}${4}${5}${6}\r\n";
+        }
+      }
+  }
+}
+
