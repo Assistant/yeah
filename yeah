@@ -20,18 +20,17 @@ print "Please input nickserv password: ";
 my $nservpass = <>;
 
 my $testing = 0;
-my $testchan = "#RuriTesting";
-my $server = "irc.rizon.net";
+my $testchan = "#MyTestChannel";
+my $server = "irc.example.net";
 my $nick = "yeah";
 my $login = "yeah";
-#my $nservpass = "lel"; # NickServ pass (if not using, keep blank)
-my $owner = "/msg Joelixny"; # Your contact info, in cast anyone needs to contact you.
-my @channel = ("#/g/entoo","#/g/bots","#/g/ainax","#/b/circlejerk","#talking","#bots","#✈▌▌","#☭","#VIzon","#/g/iggle","#idling","#/g/lovemovement","#rice");
+#my $nservpass = "password"; # NickServ pass (if not using, keep blank)
+my $owner = "/msg MyUsername"; # Your contact info, in cast anyone needs to contact you.
+my @channel = ("#example","#channel");
 my $acceptinvites = "True"; # Join rooms /invited to?
 my @ban = ("");
 my @silence = ("#/g/technology");
-#my $admin = "Joelixny!~Joelixny@"; 
-my $admin = "\@lala\.lala\.lala";
+my $admin = "\@my\.vhost\.mask";
 my $versionnumber = "0.3";
 
 my $sock = new IO::Socket::INET(PeerAddr => $server,
